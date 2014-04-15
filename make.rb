@@ -116,11 +116,11 @@ section "Preparing couch" do
   if $options[:fresh]
 
     begin
-      check_step RestClient.delete("http://tangerine:tangytangerine@localhost:5984/tangerine"), "delete database"
+      check_step RestClient.delete("http://admin:password@localhost:5984/tangerine"), "delete database"
     rescue
       nil
     end
-    check_step RestClient.put("http://tangerine:tangytangerine@localhost:5984/tangerine", "", :content_type => 'application/json'), "create new database"
+    check_step RestClient.put("http://admin:password@localhost:5984/tangerine", "", :content_type => 'application/json'), "create new database"
 
   end
 
@@ -135,8 +135,8 @@ section "Preparing couch" do
   #  file.write newText
   #}
 
-  check_step RestClient.post("http://tangerine:tangytangerine@localhost:5984/tangerine/_compact", "", :content_type => 'application/json'), "compact database"
-
+  check_step RestClient.post("http://admin:password@localhost:5984/tangerine/_compact", "", :content_type => 'application/json'), "compact database"
+  check_step RestClient.post("http://admin:password@localhost:5984/tangerine/_ensure_full_commit", "", :content_type => 'application/json'), "ensure full commit of database"
 end
 
 
