@@ -13,12 +13,14 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+
 package org.rti.tangerine;
 
 import java.io.IOException;
 
 import android.content.ServiceConnection;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -26,40 +28,21 @@ import com.couchbase.android.CouchbaseMobile;
 import com.couchbase.android.ICouchbaseDelegate;
 import com.phonegap.DroidGap;
 
-/**
- * Avoid making changes to this class.  If you find the need, please
- * make suggestions here:  https://groups.google.com/forum/#!forum/mobile-couchbase
- */
-
 public class Tangerine extends DroidGap
 {
-    public static final String TAG = Tangerine.class.getName();
-    public static final String COUCHBASE_DATABASE_SUFFIX = ".couch";
-    public static final String DEFAULT_ATTACHMENT = "/index.html";
+    public static final String TAG = "Tangerine";
+
     private CouchbaseMobile couchbaseMobile;
     private ServiceConnection couchbaseService;
     private String couchappDatabase;
 
-    protected String getDatabaseName() {
-        return findCouchApp();
-    }
-
-    protected String getDesignDocName() {
-        return findCouchApp();
-    }
-
-    protected String getAttachmentPath() {
-        return DEFAULT_ATTACHMENT;
-    }
-
-    protected String getCouchAppURL(String host, int port) {
-        return "http://" + host + ":" + port + "/" + getDatabaseName() + "/_design/" + getDesignDocName() + getAttachmentPath();
+    protected String calcTangerineURL(String host, int port) {
+        return "http://" + host + ":" + port + "/tangerine/_design/tangerine/index.html";
     }
 
     protected void couchbaseStarted(String host, int port) {
 
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -70,7 +53,7 @@ public class Tangerine extends DroidGap
         // NOTE: Callback won't show the splash until we try to load a URL
         //       so we start a load, with a wait time we should never exceed
         // super.setIntegerProperty("splashscreen", R.drawable.splash);
-        //loadUrl( "file:///android_asset/www/error.html", 120000 );
+        // loadUrl( "file:///android_asset/www/error.html", 120000 );
 
         // increase the default timeout
         super.setIntegerProperty( "loadUrlTimeoutValue", 60000 );
@@ -78,46 +61,38 @@ public class Tangerine extends DroidGap
         couchbaseMobile = new CouchbaseMobile( getBaseContext(), couchCallbackHandler );
 
         try {
-            // look for a .couch file in the assets folder
-            couchappDatabase = getDatabaseName();
-
-            if(couchappDatabase != null) {
-                // if we found one, install it
-                couchbaseMobile.installDatabase(couchappDatabase + COUCHBASE_DATABASE_SUFFIX);
-            }
+            couchbaseMobile.installDatabase("tangerine.couch");
+            couchbaseMobile.installDatabase("mmlp.couch");
         } catch (IOException e) {
             Log.e(TAG, "Error installing database", e);
         }
 
         // start couchbase
         couchbaseService = couchbaseMobile.startCouchbase();
+
+        listFiles("/assets");
+
     }
 
     /**
-     * Look for the first .couch file that is not named "welcome.couch"
-     * that can be found in the assets folder
-     *
-     * @return the name of the database (without the .couch extension)
-     * @throws IOException
+     * Returns a list of .json files to load.
      */
-    public String findCouchApp() {
-        String result = null;
-        AssetManager assetManager = getAssets();
-        String[] assets = null;
+    private void listFiles(String dirFrom) {
+        Resources res = getResources(); //if you are in an activity
+        AssetManager am = res.getAssets();
+        String fileList[] = {};
         try {
-            assets = assetManager.list("");
-        } catch (IOException e) {
-            Log.e(TAG, "Error listing assets", e);
+            fileList = am.list(dirFrom);
+        } catch (Exception e) {
+            Log.e(TAG, "Couldn't fetch file list"); 
         }
-        if(assets != null) {
-            for (String asset : assets) {
-                if(asset.endsWith(COUCHBASE_DATABASE_SUFFIX)) {
-                    result = asset.substring(0, asset.length() - COUCHBASE_DATABASE_SUFFIX.length());
-                    break;
-                }
+        if (fileList != null)
+        {   
+            for ( int i = 0;i<fileList.length;i++)
+            {
+                Log.d(TAG, fileList[i]); 
             }
         }
-        return result;
     }
 
     /**
@@ -144,10 +119,13 @@ public class Tangerine extends DroidGap
 
             //stop the load that we started to display the splash screen
             cancelLoadUrl();
+            
+            Log.d(TAG, "Cancelling load, loading couchapp");
 
-            if(couchappDatabase != null) {
-                Tangerine.this.loadUrl(getCouchAppURL(host, port));
-            }
+            //loadUrl( "file:///android_asset/www/index.html" );
+            String url = calcTangerineURL(host, port);
+            Log.d(TAG, "url: " + url);
+            Tangerine.this.loadUrl(url);
 
             Tangerine.this.couchbaseStarted(host, port);
         }
