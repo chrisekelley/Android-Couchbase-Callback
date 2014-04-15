@@ -3,5 +3,6 @@
     <access origin="http://127.0.0.1*"/>
     <access origin="http://0.0.0.0*"/>
     <access origin="http://tangerine.iriscouch.com*"/>
+    <access origin="http://databases.tangerinecentral.org*"/>
     <log level="DEBUG"/>
 </phonegap>
