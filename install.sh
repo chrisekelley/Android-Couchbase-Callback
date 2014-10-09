@@ -4,7 +4,7 @@
 echo -e "\n************"
 echo      "Uninstalling"
 echo      "************"
-adb uninstall com.couchbase.callback
+adb uninstall org.rti.tangerine  
 echo -e "\n**********"
 echo      "Installing"
 echo      "**********"
