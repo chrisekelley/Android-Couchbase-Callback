@@ -4,7 +4,7 @@
 echo -e "\n************"
 echo      "Uninstalling"
 echo      "************"
-adb uninstall org.rti.tangerine  
+adb uninstall org.rti.tangy  
 echo -e "\n**********"
 echo      "Installing"
 echo      "**********"

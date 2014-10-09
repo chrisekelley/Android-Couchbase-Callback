@@ -94,7 +94,7 @@ if $options[:make_class]
   app_name     = "Tangerine Class"
   context      = "class"
 elsif $options[:make_mobile]
-  package_name = "org.rti.tangerine"
+  package_name = "org.rti.tangy"
   app_name     = "Tangerine"
   context      = "mobile"
 end
@@ -185,7 +185,7 @@ bite_tongue do
     if $options[:make_class]
       check_step `adb uninstall org.rti.tangerineclass`, "uninstall old APK"
     elsif $options[:make_mobile]
-      check_step `adb uninstall org.rti.tangerine`,      "uninstall old APK"
+      check_step `adb uninstall org.rti.tangy`,      "uninstall old APK"
     end
     check_step `adb install bin/Tangerine-debug.apk`,  "install new APK"
   end
@@ -197,7 +197,7 @@ end
 
 puts "\nAll done. Enjoy your #{if $options[:fresh] then "fresh " else "" end}Tangerine.\n\n"
 if $options[:make_mobile]
-  `adb shell am start -n org.rti.tangerine/org.rti.tangerine.Tangerine`
+  `adb shell am start -n org.rti.tangy/org.rti.tangy.Tangy`
 elsif $options[:make_class]
   `adb shell am start -n org.rti.tangerineclass/org.rti.tangerineclass.Tangerine`
 end
